@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Philtimo — GUI Wireframe</title>
+<style>
+  :root { color-scheme: light; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a1a; padding: 40px; }
+
+  .page-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .page-title { font-size: 22px; font-weight: 700; margin-bottom: 24px; }
+  .section-divider { border: none; border-top: 2px solid #ddd; margin: 60px 0; }
+
+  /* === DASHBOARD === */
+  .dashboard { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; border: 1px solid #e0e0e0; }
+  .machines-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .machine-card { border: 2px solid #e0e0e0; border-radius: 8px; padding: 16px; }
+  .machine-card.healthy { border-left: 4px solid #22c55e; }
+  .machine-card.down { border-left: 4px solid #ef4444; }
+  .machine-name { font-weight: 700; font-size: 15px; }
+  .machine-ip { color: #666; font-size: 13px; }
+  .machine-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; font-size: 12px; }
+  .stat { background: #f8f9fa; border-radius: 4px; padding: 6px 8px; }
+  .stat-label { color: #888; }
+  .stat-value { font-weight: 600; }
+  .vm-list { margin-top: 12px; font-size: 12px; }
+  .vm-row { display: flex; justify-content: space-between; padding: 4px 0; border-top: 1px solid #f0f0f0; }
+  .vm-status { font-size: 11px; padding: 1px 6px; border-radius: 3px; }
+  .vm-status.running { background: #dcfce7; color: #166534; }
+  .vm-status.off { background: #fef2f2; color: #991b1b; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
+  .badge.green { background: #dcfce7; color: #166534; }
+  .badge.red { background: #fef2f2; color: #991b1b; }
+  .capacity-bar { height: 6px; background: #e5e7eb; border-radius: 3px; margin-top: 4px; overflow: hidden; }
+  .capacity-fill { height: 100%; border-radius: 3px; }
+  .capacity-fill.ok { background: #22c55e; }
+  .capacity-fill.warn { background: #f59e0b; }
+  .skills-bar { display: flex; gap: 10px; margin-top: 20px; }
+  .skill-btn { padding: 10px 20px; border: 2px solid #2563eb; border-radius: 8px; background: #fff; color: #2563eb; font-weight: 600; font-size: 13px; cursor: pointer; }
+  .skill-btn:hover { background: #eff6ff; }
+  .activity { margin-top: 16px; }
+  .activity-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid #f0f0f0; font-size: 13px; }
+  .activity-time { color: #888; font-size: 11px; min-width: 80px; }
+
+  /* Machine table */
+  .machine-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  .machine-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid #e0e0e0; }
+  .machine-table td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
+  .machine-table tr:hover { background: #f8fafc; }
+  .machine-table tr.clickable { cursor: pointer; }
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .status-dot.green { background: #22c55e; }
+  .status-dot.red { background: #ef4444; }
+  .status-dot.yellow { background: #f59e0b; }
+  .status-dot.blue { background: #2563eb; }
+  .job-tag { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-left: 4px; }
+  .job-tag.running { background: #dbeafe; color: #1e40af; }
+  .job-tag.debug { background: #fef9c3; color: #854d0e; }
+  .job-tag.idle { background: #f3f4f6; color: #6b7280; }
+  .job-tag.failed { background: #fef2f2; color: #991b1b; }
+
+  /* Feedback */
+  .feedback-section { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid #e0e0e0; margin-top: 20px; }
+  .feedback-section textarea { width: 100%; height: 70px; padding: 10px; border: 1px solid #d0d0d0; border-radius: 6px; font-size: 13px; font-family: inherit; resize: vertical; }
+  .feedback-row { display: flex; gap: 12px; align-items: flex-end; margin-top: 8px; }
+  .feedback-type { display: flex; gap: 6px; }
+  .feedback-chip { padding: 4px 10px; border: 1px solid #d0d0d0; border-radius: 12px; font-size: 11px; cursor: pointer; background: #fff; }
+  .feedback-chip.selected { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .feedback-submit { padding: 8px 20px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-left: auto; }
+
+  /* === SKILL PAGES === */
+  .skill-page { background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; overflow: hidden; }
+  .skill-tabs { display: flex; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; overflow-x: auto; }
+  .skill-tab { padding: 10px 16px; font-size: 11px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; color: #666; white-space: nowrap; }
+  .skill-tab.active { color: #2563eb; border-bottom-color: #2563eb; background: #fff; }
+  .skill-layout { display: grid; grid-template-columns: 260px 1fr 220px; min-height: 420px; }
+
+  /* Context panel */
+  .context-panel { border-right: 1px solid #e0e0e0; padding: 16px; background: #fafbfc; }
+  .context-section { margin-bottom: 16px; }
+  .context-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; font-weight: 600; }
+  .context-item { font-size: 12px; padding: 4px 0; display: flex; justify-content: space-between; }
+  .context-item .label { color: #666; }
+  .context-item .value { font-weight: 600; }
+
+  /* Terminal */
+  .terminal-area { padding: 16px; display: flex; flex-direction: column; }
+  .terminal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .terminal-title { font-size: 13px; font-weight: 600; }
+  .terminal-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+  .terminal-status.idle { background: #f3f4f6; color: #6b7280; }
+  .terminal-status.running { background: #dcfce7; color: #166534; }
+  .terminal { background: #1e1e1e; border-radius: 8px; flex: 1; padding: 12px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: #d4d4d4; overflow-y: auto; line-height: 1.6; }
+  .term-prompt { color: #22c55e; }
+  .term-cmd { color: #fff; }
+  .term-output { color: #a0a0a0; }
+  .term-error { color: #f87171; }
+  .term-success { color: #4ade80; }
+  .term-cursor { display: inline-block; width: 7px; height: 14px; background: #d4d4d4; animation: blink 1s step-end infinite; vertical-align: text-bottom; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .chat-input { margin-top: 8px; display: flex; gap: 8px; }
+  .chat-input input { flex: 1; padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 13px; }
+  .chat-input button { padding: 8px 16px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+  /* Actions panel */
+  .actions-panel { border-left: 1px solid #e0e0e0; padding: 16px; background: #fafbfc; }
+  .action-group { margin-bottom: 20px; }
+  .action-group-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; font-weight: 600; }
+  .action-btn { display: block; width: 100%; padding: 8px 12px; margin-bottom: 6px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fff; font-size: 12px; text-align: left; cursor: pointer; font-weight: 500; }
+  .action-btn:hover { background: #eff6ff; border-color: #2563eb; }
+  .action-btn.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .action-btn.danger { color: #dc2626; border-color: #fecaca; }
+  .action-btn.danger:hover { background: #fef2f2; }
+  .action-desc { font-size: 10px; color: #888; margin-top: 2px; font-weight: 400; }
+
+  /* Triage */
+  .triage-layout { display: grid; grid-template-columns: 300px 1fr; min-height: 420px; }
+  .test-list-panel { border-right: 1px solid #e0e0e0; padding: 16px; background: #fafbfc; overflow-y: auto; }
+  .test-item { padding: 8px 10px; border-radius: 6px; margin-bottom: 4px; font-size: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .test-item:hover { background: #eff6ff; }
+  .test-item.active { background: #dbeafe; }
+  .triage-detail { padding: 16px; }
+  .triage-verdict { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; }
+  .triage-verdict-title { font-weight: 700; color: #dc2626; font-size: 12px; margin-bottom: 4px; }
+  .triage-log { background: #1e1e1e; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 11px; color: #d4d4d4; max-height: 250px; overflow-y: auto; line-height: 1.5; }
+
+  /* Trigger Test Plan */
+  .launch-layout { display: grid; grid-template-columns: 280px 1fr 240px; min-height: 420px; }
+  .job-config-panel { border-right: 1px solid #e0e0e0; padding: 16px; background: #fafbfc; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 11px; font-weight: 600; color: #555; margin-bottom: 4px; display: block; }
+  .form-select, .form-input { width: 100%; padding: 6px 10px; border: 1px solid #d0d0d0; border-radius: 5px; font-size: 12px; background: #fff; }
+  .form-checkbox { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 0; }
+  .form-checkbox input { margin: 0; }
+  .test-picker { border: 1px solid #d0d0d0; border-radius: 5px; max-height: 130px; overflow-y: auto; padding: 6px; background: #fff; }
+  .test-pick-item { display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 3px 4px; border-radius: 3px; }
+  .test-pick-item:hover { background: #f0f4ff; }
+  .test-pick-item input { margin: 0; }
+  .queue-panel { border-left: 1px solid #e0e0e0; padding: 16px; background: #fafbfc; }
+  .queue-item { border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; font-size: 12px; background: #fff; }
+  .queue-item.active { border-left: 3px solid #2563eb; }
+  .queue-item.done { border-left: 3px solid #22c55e; opacity: 0.7; }
+  .queue-item.waiting { border-left: 3px solid #e5e7eb; }
+  .queue-meta { font-size: 10px; color: #888; margin-top: 2px; }
+  .progress-bar { height: 4px; background: #e5e7eb; border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: #2563eb; border-radius: 2px; }
+
+  .annotation { font-size: 11px; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-top: 12px; font-style: italic; }
+
+  /* Coverage buckets */
+  .bucket { margin-bottom: 16px; }
+  .bucket-header { font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between; align-items: center; }
+  .bucket-header.fail { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; border-bottom: none; }
+  .bucket-header.ne { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; border-bottom: none; }
+  .bucket-header.ok { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-bottom: none; }
+  .bucket-header.run { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; border-bottom: none; }
+  .bucket-body { border: 1px solid #e0e0e0; border-radius: 0 0 6px 6px; overflow: hidden; }
+  .bucket-count { font-size: 11px; font-weight: 600; opacity: 0.8; }
+
+  /* Phase stepper */
+  .phase-stepper { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+  .phase-step { font-size: 10px; padding: 4px 10px; border-radius: 12px; border: 1px solid #e0e0e0; background: #fff; color: #888; }
+  .phase-step.done { background: #dcfce7; border-color: #bbf7d0; color: #166534; }
+  .phase-step.active { background: #dbeafe; border-color: #93c5fd; color: #1e40af; font-weight: 600; }
+  .phase-step.pending { opacity: 0.5; }
+
+  /* Log viewer */
+  .log-viewer { background: #1e1e1e; border-radius: 8px; padding: 12px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: #d4d4d4; min-height: 320px; max-height: 480px; overflow-y: auto; line-height: 1.5; }
+  .log-truncated { background: #fef9c3; border: 1px solid #fde047; border-radius: 6px; padding: 8px 12px; font-size: 11px; color: #854d0e; margin-bottom: 8px; }
+
+  /* Placeholder page */
+  .placeholder-hero { text-align: center; padding: 48px 24px; color: #666; }
+  .placeholder-hero h2 { font-size: 18px; color: #374151; margin-bottom: 8px; }
+  .placeholder-badge { display: inline-block; font-size: 11px; padding: 4px 12px; border-radius: 12px; background: #f3f4f6; color: #6b7280; margin-bottom: 16px; }
+
+  /* === OUTPUT PANEL (hybrid model: same shell, domain-specific renderer) === */
+  .output-panel { border: 1px solid #e0e0e0; border-radius: 8px; background: #fff; margin-top: 16px; overflow: hidden; }
+  .output-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; }
+  .output-panel-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #374151; }
+  .output-mode-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .output-mode { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; border: 1px solid #e0e0e0; background: #fff; color: #888; }
+  .output-mode.primary { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+  .output-mode.secondary { background: #f3f4f6; color: #6b7280; }
+  .output-panel-body { padding: 14px; }
+  .output-section { margin-bottom: 14px; }
+  .output-section:last-child { margin-bottom: 0; }
+  .output-section-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #888; margin-bottom: 6px; }
+  .artifact-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-bottom: 10px; }
+  .artifact-card { border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px 10px; font-size: 11px; background: #fafbfc; }
+  .artifact-card .label { color: #888; font-size: 10px; margin-bottom: 2px; }
+  .artifact-card .value { font-family: monospace; font-size: 10px; word-break: break-all; color: #374151; }
+  .artifact-card a { color: #2563eb; text-decoration: none; font-size: 11px; font-weight: 600; }
+  .run-dir { font-size: 10px; color: #888; font-family: monospace; margin-bottom: 10px; padding: 6px 8px; background: #f8f9fa; border-radius: 4px; }
+  .output-taxonomy { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 16px; font-size: 10px; color: #666; }
+  .output-taxonomy span { padding: 3px 8px; border-radius: 4px; background: #f3f4f6; }
+  .stream-compact .terminal { min-height: 80px; max-height: 120px; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<!-- ==================== PAGE 1: LANDING ==================== -->
+<p class="page-label">Page 1</p>
+<p class="page-title">Landing Page</p>
+
+<div style="background: #fff; border-radius: 12px; padding: 40px; border: 1px solid #e0e0e0; text-align: center;">
+  <div style="font-size: 22px; font-weight: 700; margin-bottom: 6px; text-align: center;">Philtimo</div>
+  <div style="font-size: 13px; color: #888; margin-bottom: 32px; text-align: center;">Select a skill to get started</div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; max-width: 800px; margin: 0 auto;">
+
+    <!-- Column 1: Setup -->
+    <div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+        <div style="width: 22px; height: 22px; border-radius: 50%; background: #2563eb; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">1</div>
+        <div style="font-size: 13px; font-weight: 700;">Setup</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.borderColor='#2563eb'; this.style.background='#f8faff'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+          <div style="font-size: 18px;">&#x1f5a5;</div>
+          <div><div style="font-size: 12px; font-weight: 600;">VM Creation</div><div style="font-size: 10px; color: #888;">Create &amp; manage VMs</div></div>
+        </div>
+        <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.borderColor='#2563eb'; this.style.background='#f8faff'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+          <div style="font-size: 18px;">&#x1f4e6;</div>
+          <div><div style="font-size: 12px; font-weight: 600;">Docker Match</div><div style="font-size: 10px; color: #888;">Find images for build</div></div>
+        </div>
+        <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.borderColor='#2563eb'; this.style.background='#f8faff'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+          <div style="font-size: 18px;">&#x2699;</div>
+          <div><div style="font-size: 12px; font-weight: 600;">Ansible</div><div style="font-size: 10px; color: #888;">Run playbooks</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 2: Deploy & Execute -->
+    <div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+        <div style="width: 22px; height: 22px; border-radius: 50%; background: #22c55e; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">2</div>
+        <div style="font-size: 13px; font-weight: 700;">Deploy &amp; Execute</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.borderColor='#22c55e'; this.style.background='#f0fdf4'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+          <div style="font-size: 18px;">&#x1f680;</div>
+          <div><div style="font-size: 12px; font-weight: 600;">Trigger Test Plan</div><div style="font-size: 10px; color: #888;">Dispatch NE workflows</div></div>
+        </div>
+        <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.borderColor='#22c55e'; this.style.background='#f0fdf4'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+          <div style="font-size: 18px;">&#x1f4cb;</div>
+          <div><div style="font-size: 12px; font-weight: 600;">Coverage &amp; NE</div><div style="font-size: 10px; color: #888;">Test coverage lookup</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 3: Monitor & Triage -->
+    <div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+        <div style="width: 22px; height: 22px; border-radius: 50%; background: #f59e0b; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">3</div>
+        <div style="font-size: 13px; font-weight: 700;">Monitor &amp; Triage</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.borderColor='#f59e0b'; this.style.background='#fffbeb'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+          <div style="font-size: 18px;">&#x1f50d;</div>
+          <div><div style="font-size: 12px; font-weight: 600;">Triage</div><div style="font-size: 10px; color: #888;">Failure &amp; regression</div></div>
+        </div>
+        <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.borderColor='#f59e0b'; this.style.background='#fffbeb'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+          <div style="font-size: 18px;">&#x1f4c4;</div>
+          <div><div style="font-size: 12px; font-weight: 600;">Log Fetcher</div><div style="font-size: 10px; color: #888;">Fetch &amp; view logs</div></div>
+        </div>
+        <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.borderColor='#f59e0b'; this.style.background='#fffbeb'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+          <div style="font-size: 18px;">&#x1f3ab;</div>
+          <div><div style="font-size: 12px; font-weight: 600;">Jira</div><div style="font-size: 10px; color: #888;">Search tickets (jira_search)</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="output-taxonomy">
+  <span><strong>Output shell</strong> — same labeled panel on every skill page</span>
+  <span><strong>Stream</strong> — long-running agent / subprocess</span>
+  <span><strong>Table</strong> — instant MCP query results</span>
+  <span><strong>Document</strong> — files under SQA_Workspace_Cursor run dir</span>
+  <span><strong>External</strong> — GitHub Actions / Jira web</span>
+</div>
+<p class="annotation">Hybrid output model: consistent Output panel chrome; renderer varies by domain. Durable artifacts only for long runs (triage &rarr; failure_analysis langgraph WORKSPACE L353). Ansible: skill only, no page yet.</p>
+
+<hr class="section-divider">
+
+<!-- ==================== PAGE 2: VM CREATION ==================== -->
+<p class="page-label">Page 2</p>
+<p class="page-title">VM Creation</p>
+
+<div class="skill-page">
+  <div class="skill-tabs">
+    <div class="skill-tab active">VM Creation</div>
+    <div class="skill-tab">Triage</div>
+    <div class="skill-tab">Coverage &amp; NE</div>
+    <div class="skill-tab">Trigger Test Plan</div>
+    <div class="skill-tab">Docker Match</div>
+    <div class="skill-tab">Ansible</div>
+    <div class="skill-tab">Log Fetcher</div>
+    <div class="skill-tab">Jira</div>
+  </div>
+
+  <div class="skill-layout">
+
+    <div class="context-panel" style="display: flex; flex-direction: column;">
+      <div class="context-title">Inputs <span style="font-weight:400;color:#888;text-transform:none;">(agent collects per vm-creation + GeneralGuidelines)</span></div>
+
+      <div class="form-group" style="margin-bottom: 10px;">
+        <label class="form-label">Hypervisor</label>
+        <div style="display: flex; gap: 10px;">
+          <label style="font-size: 11px; display: flex; align-items: center; gap: 4px;"><input type="radio" name="hv-type" checked> KVM</label>
+          <label style="font-size: 11px; display: flex; align-items: center; gap: 4px;"><input type="radio" name="hv-type"> Hyper-V</label>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 10px;">
+        <label class="form-label">Host (SSH target)</label>
+        <input class="form-input" placeholder="conductor node hostname" style="font-size: 12px;">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 10px;">
+        <label class="form-label">SSH Username</label>
+        <input class="form-input" placeholder="username" style="font-size: 12px;">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 6px;">
+        <label class="form-label">Private Key Path</label>
+        <input class="form-input" placeholder="path to private key" style="font-size: 11px;">
+      </div>
+
+      <div style="padding: 5px 7px; background: #fef9c3; border: 1px solid #fde68a; border-radius: 4px; margin-bottom: 12px;">
+        <label style="font-size: 10px; display: flex; align-items: center; gap: 5px; color: #854d0e; cursor: pointer;">
+          <input type="checkbox"> Use SSH password instead <span style="color: #a16207;">(run_ssh_command accepts password or key)</span>
+        </label>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 10px;">
+        <label class="form-label">VM Profile</label>
+        <select class="form-select">
+          <option>1VF Navi32</option>
+          <option selected>2VF Navi32</option>
+          <option>BigVM (2 GPU passthrough)</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label class="form-label">VM Name</label>
+        <input class="form-input" placeholder="vm name">
+      </div>
+
+      <button class="action-btn primary" style="padding: 10px; font-size: 13px;">Create VM</button>
+      <div style="margin-top: 8px; font-size: 10px; color: #888; line-height: 1.4;">
+        Agent calls VM MCP tools: <code>create_kvm_vm_over_ssh</code> / <code>create_hyperv_vm_over_ssh</code>, optionally <code>attach_kvm_amd_gpu_over_ssh</code>, <code>configure_amd_gim_vf_over_ssh</code>, <code>get_kvm_vm_ip_over_ssh</code>.
+      </div>
+    </div>
+
+    <div class="terminal-area" style="grid-column: span 2;">
+      <div class="output-panel" style="margin-top: 0; flex: 1; display: flex; flex-direction: column;">
+        <div class="output-panel-header">
+          <div class="output-panel-title">Output</div>
+          <div class="output-mode-badges">
+            <span class="output-mode primary">Stream</span>
+            <span class="output-mode secondary">Table</span>
+          </div>
+        </div>
+        <div class="output-panel-body" style="flex: 1; display: flex; flex-direction: column;">
+
+          <div class="output-section">
+            <div class="output-section-label">Progress <span style="font-weight:400;text-transform:none;">(primary)</span></div>
+            <div class="terminal-header" style="margin-bottom: 6px;">
+              <div class="terminal-title" style="font-size: 12px;">Agent stream</div>
+              <div class="terminal-status idle">&#x25cf; idle</div>
+            </div>
+            <div class="terminal" style="min-height: 180px;">
+              <div class="term-output" style="color: #555; font-style: italic;">Agent reads form inputs and invokes ssh-connect + VM MCP tools. Profiles: 1VF / 2VF / BigVM per GeneralGuidelines.md.</div>
+            </div>
+          </div>
+
+          <div class="output-section">
+            <div class="output-section-label">MCP results <span style="font-weight:400;text-transform:none;">(structured strip after tool calls)</span></div>
+            <div class="artifact-strip">
+              <div class="artifact-card"><div class="label">Tool</div><div class="value">create_kvm_vm_over_ssh</div></div>
+              <div class="artifact-card"><div class="label">VM IP</div><div class="value">(from get_kvm_vm_ip_over_ssh)</div></div>
+              <div class="artifact-card"><div class="label">GPU attach</div><div class="value">(attach_kvm_amd_gpu_over_ssh status)</div></div>
+            </div>
+            <div style="font-size: 10px; color: #888;">No run directory — ephemeral MCP responses only unless user saves logs.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p class="annotation">vm-creation/SKILL.md + GeneralGuidelines.md L33&ndash;40. Output: Stream (agent) + Table strip (MCP tool results). No durable artifact dir.</p>
+
+<hr class="section-divider">
+
+<!-- ==================== PAGE 3: TRIAGE ==================== -->
+<p class="page-label">Page 3</p>
+<p class="page-title">Triage</p>
+
+<div class="skill-page">
+  <div class="skill-tabs">
+    <div class="skill-tab">VM Creation</div>
+    <div class="skill-tab active">Triage</div>
+    <div class="skill-tab">Coverage &amp; NE</div>
+    <div class="skill-tab">Trigger Test Plan</div>
+    <div class="skill-tab">Docker Match</div>
+    <div class="skill-tab">Ansible</div>
+    <div class="skill-tab">Log Fetcher</div>
+    <div class="skill-tab">Jira</div>
+  </div>
+
+  <div style="padding: 20px;">
+
+    <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; background: #fafbfc; margin-bottom: 16px;">
+
+      <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+        <div class="form-group" style="margin-bottom: 0; min-width: 240px;">
+          <label class="form-label">Task</label>
+          <select class="form-select" style="padding: 8px 12px; font-size: 13px;">
+            <option value="failure" selected>Failure Analysis &amp; Mapping</option>
+            <option value="perf">Performance Drop / Regression Analysis</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0; min-width: 160px;">
+          <label class="form-label">Build</label>
+          <input class="form-input" placeholder="7.12.0-792" style="padding: 8px 12px; font-size: 13px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0; min-width: 160px;">
+          <label class="form-label">Build B <span style="font-weight:400;color:#888;">(perf only)</span></label>
+          <input class="form-input" placeholder="newer build" style="padding: 8px 12px; font-size: 13px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0; min-width: 160px;">
+          <label class="form-label">Hostname</label>
+          <input class="form-input" placeholder="host" style="padding: 8px 12px; font-size: 13px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0; min-width: 140px;">
+          <label class="form-label">Repository</label>
+          <select class="form-select" style="padding: 8px 12px; font-size: 13px;">
+            <option>TheRock</option>
+            <option>rockrel</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0; min-width: 140px;">
+          <label class="form-label">Type <span style="font-weight:400;color:#888;">(failure only)</span></label>
+          <select class="form-select" style="padding: 8px 12px; font-size: 13px;">
+            <option>functional</option>
+            <option>performance</option>
+            <option>both</option>
+          </select>
+        </div>
+        <button class="action-btn primary" style="padding: 8px 28px; font-size: 13px; margin-bottom: 0;">Run</button>
+      </div>
+
+      <div style="margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">SSH Username</label>
+          <input class="form-input" style="padding: 8px 12px; font-size: 12px;" placeholder="username">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Private Key Path <span style="font-weight:400;color:#888;">or password below</span></label>
+          <input class="form-input" style="padding: 8px 12px; font-size: 12px;" placeholder="private key path">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top: 10px; margin-bottom: 0;">
+        <label class="form-label">SSH Password <span style="font-weight:400;color:#888;">(failure only, if not using key)</span></label>
+        <input class="form-input" type="password" style="padding: 8px 12px; font-size: 12px;" placeholder="optional">
+      </div>
+
+      <div style="margin-top: 12px; padding: 8px 12px; background: #1e1e1e; border-radius: 6px; font-family: monospace; font-size: 10px; color: #a0a0a0; word-break: break-all;">
+        <span style="color: #888;">$</span> <span style="color: #d4d4d4;">python run.py cursor failure --build 7.12.0-792 --hostname HOST --repository TheRock --type functional --username USER --private-key-path KEY ...</span>
+      </div>
+    </div>
+
+    <div class="output-panel">
+      <div class="output-panel-header">
+        <div class="output-panel-title">Output</div>
+        <div class="output-mode-badges">
+          <span class="output-mode primary">Document</span>
+          <span class="output-mode secondary">Stream</span>
+        </div>
+      </div>
+      <div class="output-panel-body">
+
+        <div class="run-dir">Run dir: $HOME/SQA_Workspace_Cursor/&lt;run_basename&gt;/ (failure_analysis_and_jira_mapping_langgraph.py L353)</div>
+
+        <div class="output-section">
+          <div class="output-section-label">Deliverables <span style="font-weight:400;text-transform:none;">(primary — open / preview after run completes)</span></div>
+          <div class="artifact-strip">
+            <div class="artifact-card"><div class="label">Report (md)</div><div class="value"><a href="#">report_&lt;host&gt;_&lt;build&gt;_&lt;type&gt;_&lt;ts&gt;.md</a></div></div>
+            <div class="artifact-card"><div class="label">Report (html)</div><div class="value"><a href="#">report_&lt;host&gt;_&lt;build&gt;_&lt;type&gt;_&lt;ts&gt;.html</a></div></div>
+            <div class="artifact-card"><div class="label">Prefilled tickets</div><div class="value">tickets/&lt;test&gt;_PREFILLED.md</div></div>
+          </div>
+          <div style="border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; background: #fafbfc; font-size: 11px; color: #666; min-height: 80px;">
+            Report preview pane — rendered markdown/html from run dir (failure_jira_mapping_overview.md L450&ndash;454).
+          </div>
+        </div>
+
+        <div class="output-section stream-compact">
+          <div class="output-section-label">Progress <span style="font-weight:400;text-transform:none;">(secondary — run.py / langgraph subprocess)</span></div>
+          <div class="terminal-header" style="margin-bottom: 6px;">
+            <div class="terminal-title" style="font-size: 12px;">run.py stream</div>
+            <div class="terminal-status idle">&#x25cf; idle</div>
+          </div>
+          <div class="terminal">
+            <div class="term-output" style="color: #555; font-style: italic;">Fill the form and click Run. Cursor presents the command; Claude may execute directly (per skill guidance).</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p class="annotation">failure-analysis-and-mapping/SKILL.md + perf-drop-triaging/SKILL.md &rarr; run.py. Output: Document (primary) + Stream (secondary). Artifacts under SQA_Workspace_Cursor run dir.</p>
+
+<hr class="section-divider">
+
+<!-- ==================== PAGE 4: LAUNCH JOBS ==================== -->
+<p class="page-label">Page 4</p>
+<p class="page-title">Trigger Test Plan</p>
+
+<div class="skill-page">
+  <div class="skill-tabs">
+    <div class="skill-tab">VM Creation</div>
+    <div class="skill-tab">Triage</div>
+    <div class="skill-tab">Coverage &amp; NE</div>
+    <div class="skill-tab active">Trigger Test Plan</div>
+    <div class="skill-tab">Docker Match</div>
+    <div class="skill-tab">Ansible</div>
+    <div class="skill-tab">Log Fetcher</div>
+    <div class="skill-tab">Jira</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 300px 1fr; min-height: 380px;">
+    <!-- LEFT: Config matching trigger-test-plan skill -->
+    <div style="border-right: 1px solid #e0e0e0; padding: 16px; background: #fafbfc;">
+      <div class="form-group">
+        <label class="form-label">Host</label>
+        <select class="form-select"><option selected>v710-2vf-vm1</option><option>smci350-rck-04</option><option>smci350-rck-07</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Build</label>
+        <select class="form-select"><option selected>7.14.0-20260604</option><option>7.14.0-20260601</option></select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">NE / Ignored Tests <span style="color:#888; font-weight:400;">(from coverage)</span></label>
+        <div style="border: 1px solid #d0d0d0; border-radius: 5px; max-height: 110px; overflow-y: auto; padding: 6px; background: #fff; font-size: 11px; color: #555;">
+          NE_and_Ignored testnames from get_coverage_ne_and_unmapped (SKILL.md L57)
+        </div>
+      </div>
+
+      <div class="context-title" style="margin-top: 12px;">Docker Images <span style="font-weight: 400; text-transform: none; color: #888;">(by framework shape)</span></div>
+      <div class="form-group"><label class="form-label">PyTorch docker</label><select class="form-select"><option>(user-selected pytorch docker)</option></select></div>
+      <div class="form-group"><label class="form-label">JAX docker</label><select class="form-select"><option>(user-selected jax docker)</option></select></div>
+      <div class="form-group"><label class="form-label">VLLM-base docker</label><select class="form-select"><option>(user-selected vllm-base docker)</option></select></div>
+      <div class="form-group"><label class="form-label">SGLang docker</label><select class="form-select"><option>(user-selected sglang docker)</option></select></div>
+
+      <div class="form-group"><label class="form-label">triggered_by</label><input class="form-input" value="bsarwari" placeholder="optional"></div>
+      <div class="form-group"><label class="form-label">execution_label</label><input class="form-input" value="sqa-core-nightly"></div>
+
+      <div class="form-checkbox" style="margin-top: 8px;"><input type="checkbox"> I've reviewed the dispatch preview</div>
+      <button class="action-btn" style="margin-top: 8px; opacity: 0.5; cursor: not-allowed;">Launch Dispatch <span style="font-size: 10px; color: #888;">(check confirm to enable)</span></button>
+      
+    </div>
+
+    <!-- RIGHT: Output panel -->
+    <div style="padding: 16px;">
+      <div class="output-panel" style="margin-top: 0;">
+        <div class="output-panel-header">
+          <div class="output-panel-title">Output</div>
+          <div class="output-mode-badges">
+            <span class="output-mode secondary">Table</span>
+            <span class="output-mode primary">External</span>
+            <span class="output-mode secondary">Stream</span>
+          </div>
+        </div>
+        <div class="output-panel-body">
+
+          <div class="output-section">
+            <div class="output-section-label">Dispatch preview <span style="font-weight:400;text-transform:none;">(Table — before confirm)</span></div>
+            <table class="machine-table" style="margin-top: 4px;">
+              <thead><tr><th>#</th><th>testname(s)</th><th>workflow</th><th>shape</th><th>docker family</th><th>inputs preview</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>(testname)</td><td style="font-size:11px;">(workflow.yml)</td><td>(shape)</td><td>(docker family)</td><td style="font-size:11px;">(inputs preview)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="output-section">
+            <div class="output-section-label">GHA status <span style="font-weight:400;text-transform:none;">(External — primary after dispatch; poll GitHub Actions)</span></div>
+            <table class="machine-table" style="margin-top: 4px;">
+              <thead><tr><th>Workflow</th><th>server_request_id</th><th>Run URL</th><th>Status</th><th>Un-triggerable</th></tr></thead>
+              <tbody>
+                <tr><td style="font-size: 12px; color: #888;" colspan="5">After dispatch: poll via get_recent_runs_qa_forge + get_workflow_run_status_qa_forge (SKILL.md L167). Progress lives on GitHub, not local disk.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="output-section stream-compact">
+            <div class="output-section-label">MCP trace <span style="font-weight:400;text-transform:none;">(Stream — secondary; trigger_workflow_qa_forge calls)</span></div>
+            <div class="terminal-header" style="margin-bottom: 6px;">
+              <div class="terminal-title" style="font-size: 12px;">Dispatch log</div>
+              <div class="terminal-status idle">&#x25cf; idle</div>
+            </div>
+            <div class="terminal">
+              <div class="term-output" style="color: #555; font-style: italic;">Agent logs trigger_workflow_qa_forge calls here after Launch.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="annotation">trigger-test-plan/SKILL.md. Output: Table (preview) + External/GHA (primary post-dispatch) + Stream (MCP trace). No local run dir.</p>
+
+<hr class="section-divider">
+
+<!-- ==================== PAGE 5: COVERAGE & NE ==================== -->
+<p class="page-label">Page 5</p>
+<p class="page-title">Coverage &amp; NE</p>
+
+<div class="skill-page">
+  <div class="skill-tabs">
+    <div class="skill-tab">VM Creation</div>
+    <div class="skill-tab">Triage</div>
+    <div class="skill-tab active">Coverage &amp; NE</div>
+    <div class="skill-tab">Trigger Test Plan</div>
+    <div class="skill-tab">Docker Match</div>
+    <div class="skill-tab">Ansible</div>
+    <div class="skill-tab">Log Fetcher</div>
+    <div class="skill-tab">Jira</div>
+  </div>
+
+  <div style="padding: 20px;">
+    <!-- Query form -->
+    <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; background: #fafbfc; margin-bottom: 20px;">
+      <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+        <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+          <label class="form-label">Host</label>
+          <select class="form-select" style="padding: 8px 12px; font-size: 13px;">
+            <option value="">-- Select host --</option>
+            <option selected>smci350-rck-04</option>
+            <option>ctr-navi4x-am48-ws06</option>
+            <option>corsair-rock</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0; min-width: 180px;">
+          <label class="form-label">Build</label>
+          <select class="form-select" style="padding: 8px 12px; font-size: 13px;">
+            <option value="">-- Select build --</option>
+            <option selected>7.13.0-1347</option>
+            <option>7.13.0-1340</option>
+            <option>7.12.0-792</option>
+          </select>
+        </div>
+        <button class="action-btn primary" style="padding: 8px 24px; margin-bottom: 0;">Query</button>
+        
+      </div>
+      <div style="margin-top: 8px; font-size: 11px; color: #888;">Tool: get_coverage_summary (mcp.json L95). Buckets per CoverageAnalysis.md L25&ndash;35.</div>
+    </div>
+
+    <!-- Output: bucket table -->
+    <div class="output-panel">
+      <div class="output-panel-header">
+        <div class="output-panel-title">Output</div>
+        <div class="output-mode-badges">
+          <span class="output-mode primary">Table</span>
+        </div>
+      </div>
+      <div class="output-panel-body" style="padding: 0;">
+    <div style="max-height: 520px; overflow-y: auto; padding: 14px;">
+
+      <div class="bucket">
+        <div class="bucket-header fail"><span>Fail, Unmapped</span><span class="bucket-count">3 items</span></div>
+        <div class="bucket-body">
+          <table class="machine-table">
+            <thead><tr><th>Testname</th><th>Category</th><th>Workflow run</th><th>Status</th><th>Result</th><th></th></tr></thead>
+            <tbody>
+              <tr>
+                <td style="font-weight: 600;">(testname)</td>
+                <td>Func</td>
+                <td style="font-size: 11px;">(matched_workflow_run_on_system)</td>
+                <td>completed</td>
+                <td><span class="job-tag failed">failure</span></td>
+                <td><button class="action-btn" style="padding: 2px 8px; font-size: 10px; margin: 0;">Log snippet</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bucket">
+        <div class="bucket-header fail"><span>IGNORE, Unmapped</span><span class="bucket-count">1 item</span></div>
+        <div class="bucket-body">
+          <table class="machine-table">
+            <tbody>
+              <tr>
+                <td style="font-weight: 600;">(testname)</td>
+                <td>Func</td>
+                <td style="font-size: 11px;">&mdash;</td>
+                <td>completed</td>
+                <td><span class="job-tag debug">IGNORE</span></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bucket">
+        <div class="bucket-header ne"><span>Not Run / NE</span><span class="bucket-count">12 items</span></div>
+        <div class="bucket-body" style="padding: 10px 12px; font-size: 12px; color: #555;">
+          (testname list from Not Run / NE bucket)
+        </div>
+      </div>
+
+      <div class="bucket">
+        <div class="bucket-header run"><span>in_progress / in_progress</span><span class="bucket-count">2 items</span></div>
+        <div class="bucket-body" style="padding: 10px 12px; font-size: 12px;">
+          (testname + run_url per CoverageAnalysis.md L44)
+        </div>
+      </div>
+
+      <div class="bucket">
+        <div class="bucket-header run"><span>queued / queued</span><span class="bucket-count">(n) items</span></div>
+        <div class="bucket-body" style="padding: 10px 12px; font-size: 12px; color: #555;">
+          (testname list — CoverageAnalysis.md L34)
+        </div>
+      </div>
+
+      <div class="bucket">
+        <div class="bucket-header fail"><span>completed / failure</span><span class="bucket-count">(n) items</span></div>
+        <div class="bucket-body" style="padding: 10px 12px; font-size: 12px; color: #888;">Mapped failures — click to expand</div>
+      </div>
+
+      <div class="bucket">
+        <div class="bucket-header ne"><span>completed / cancelled</span><span class="bucket-count">(n) items</span></div>
+        <div class="bucket-body" style="padding: 10px 12px; font-size: 12px; color: #888;">Cancelled runs — click to expand</div>
+      </div>
+
+      <div class="bucket">
+        <div class="bucket-header ne"><span>Workflow Not Found</span><span class="bucket-count">(n) items</span></div>
+        <div class="bucket-body" style="padding: 10px 12px; font-size: 12px; color: #555;">
+          (testnames with no matching workflow — CoverageAnalysis.md L35)
+        </div>
+      </div>
+
+      <div class="bucket">
+        <div class="bucket-header ok"><span>completed / success</span><span class="bucket-count">28 items</span></div>
+        <div class="bucket-body" style="padding: 10px 12px; font-size: 12px; color: #888;">Collapsed &mdash; click to expand</div>
+      </div>
+
+    </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="annotation">CoverageAnalysis.md L25&ndash;35 + get_coverage_summary (mcp.json L95). Output: Table only — instant MCP query, no run dir. Log snippet = fetch_log or HTTP GET per L50&ndash;77.</p>
+
+<hr class="section-divider">
+
+<!-- ==================== PAGE 6: DOCKER MATCH ==================== -->
+<p class="page-label">Page 6</p>
+<p class="page-title">Docker Match</p>
+
+<div class="skill-page">
+  <div class="skill-tabs">
+    <div class="skill-tab">VM Creation</div>
+    <div class="skill-tab">Triage</div>
+    <div class="skill-tab">Coverage &amp; NE</div>
+    <div class="skill-tab">Trigger Test Plan</div>
+    <div class="skill-tab active">Docker Match</div>
+    <div class="skill-tab">Ansible</div>
+    <div class="skill-tab">Log Fetcher</div>
+    <div class="skill-tab">Jira</div>
+  </div>
+
+  <div style="padding: 20px;">
+    <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; background: #fafbfc; margin-bottom: 20px;">
+      <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+        <div class="form-group" style="margin-bottom: 0; min-width: 180px;">
+          <label class="form-label">Build</label>
+          <select class="form-select" style="padding: 8px 12px; font-size: 13px;">
+            <option selected>7.13.0-1347</option>
+            <option>7.12.0-792</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+          <label class="form-label">Host (for OS detect)</label>
+          <select class="form-select" style="padding: 8px 12px; font-size: 13px;">
+            <option selected>smci350-rck-04</option>
+            <option>ctr-navi4x-am48-ws06</option>
+          </select>
+        </div>
+        <button class="action-btn primary" style="padding: 8px 24px; margin-bottom: 0;">Query</button>
+      </div>
+      <div style="margin-top: 8px; font-size: 11px; color: #888;">run_ssh_command for OS &rarr; docker_os Ubuntu-24.04 or Ubuntu-22.04 &rarr; get_dockers_by_build_string (docker-image-match/SKILL.md L7&ndash;15).</div>
+    </div>
+
+    <div class="output-panel">
+      <div class="output-panel-header">
+        <div class="output-panel-title">Output</div>
+        <div class="output-mode-badges">
+          <span class="output-mode primary">Table</span>
+        </div>
+      </div>
+      <div class="output-panel-body" style="padding: 0;">
+    <table class="machine-table" style="margin: 0;">
+      <thead>
+        <tr><th>Framework family</th><th>Docker tag</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="job-tag running">PyTorch base</span></td>
+          <td style="font-family: monospace; font-size: 11px;">rocm/pytorch:…-abcdef12</td>
+          <td style="font-size: 11px; color: #888;">&mdash;</td>
+        </tr>
+        <tr>
+          <td><span class="job-tag running">PyTorch + VLLM</span></td>
+          <td style="font-family: monospace; font-size: 11px;">rocm/pytorch-vllm:…-abcdef12</td>
+          <td style="font-size: 11px; color: #888;">&mdash;</td>
+        </tr>
+        <tr>
+          <td><span class="job-tag idle">TensorFlow</span></td>
+          <td style="font-family: monospace; font-size: 11px;">rocm/tf-manylinux:…-abcdef12</td>
+          <td style="font-size: 11px; color: #888;">&mdash;</td>
+        </tr>
+        <tr>
+          <td><span class="job-tag idle">JAX</span></td>
+          <td style="font-family: monospace; font-size: 11px;">rocm/jax:…-abcdef12</td>
+          <td style="font-size: 11px; color: #888;">&mdash;</td>
+        </tr>
+      </tbody>
+    </table>
+      </div>
+    </div>
+    <div style="margin-top: 12px; font-size: 11px; color: #888;">Filtered out: internal_testing, develop-upstream tags</div>
+  </div>
+</div>
+
+<p class="annotation">docker-image-match/SKILL.md. Output: Table only — instant MCP query (get_dockers_by_build_string). No run dir.</p>
+
+<hr class="section-divider">
+
+<!-- ==================== PAGE 7: LOG FETCHER ==================== -->
+<p class="page-label">Page 7</p>
+<p class="page-title">Log Fetcher</p>
+
+<div class="skill-page">
+  <div class="skill-tabs">
+    <div class="skill-tab">VM Creation</div>
+    <div class="skill-tab">Triage</div>
+    <div class="skill-tab">Coverage &amp; NE</div>
+    <div class="skill-tab">Trigger Test Plan</div>
+    <div class="skill-tab">Docker Match</div>
+    <div class="skill-tab">Ansible</div>
+    <div class="skill-tab active">Log Fetcher</div>
+    <div class="skill-tab">Jira</div>
+  </div>
+
+  <div style="padding: 20px;">
+    <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; background: #fafbfc; margin-bottom: 16px;">
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Log URL</label>
+        <input class="form-input" type="url" style="padding: 8px 12px; font-size: 13px;" placeholder="https://artifactory... or qa-forge temporary log link">
+      </div>
+      <button class="action-btn primary" style="padding: 8px 24px; margin: 0; width: auto;">Fetch</button>
+      <div style="margin-top: 8px; font-size: 11px; color: #888;"><code>fetch_log(url)</code> — mcp_server_log_fetcher/server.py L39&ndash;77: &lt;1 MB full file; &ge;1 MB last ~10,000 lines (automatic).</div>
+    </div>
+
+    <div class="output-panel">
+      <div class="output-panel-header">
+        <div class="output-panel-title">Output</div>
+        <div class="output-mode-badges">
+          <span class="output-mode primary">Log viewer</span>
+        </div>
+      </div>
+      <div class="output-panel-body">
+        <div class="log-truncated" style="display: none;">Large file — showing last ~10,000 lines only.</div>
+        <div class="log-viewer" style="min-height: 280px;">
+          <div style="color: #888; font-family: inherit; font-size: 12px;">Log contents appear here after Fetch.</div>
+        </div>
+        <div style="margin-top: 8px; font-size: 10px; color: #888;">Ephemeral — returned string from fetch_log; not written to run dir unless user saves.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="annotation">fetch_log (mcp_server_log_fetcher/server.py L39&ndash;77). Output: Log viewer only. No Copy/Download in repo.</p>
+
+<hr class="section-divider">
+
+<!-- ==================== PAGE 8: JIRA ==================== -->
+<p class="page-label">Page 8</p>
+<p class="page-title">Jira</p>
+
+<div class="skill-page">
+  <div class="skill-tabs">
+    <div class="skill-tab">VM Creation</div>
+    <div class="skill-tab">Triage</div>
+    <div class="skill-tab">Coverage &amp; NE</div>
+    <div class="skill-tab">Trigger Test Plan</div>
+    <div class="skill-tab">Docker Match</div>
+    <div class="skill-tab">Ansible</div>
+    <div class="skill-tab">Log Fetcher</div>
+    <div class="skill-tab active">Jira</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 340px; min-height: 480px;">
+    <div style="padding: 20px; border-right: 1px solid #e0e0e0;">
+      <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; background: #fafbfc; margin-bottom: 16px;">
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label class="form-label">JQL Query</label>
+          <input class="form-input" type="text" style="padding: 8px 12px; font-size: 12px;" value='text ~ "hipStreamTest.StreamSync" AND project IN (ROCM, AISQA, AITESTAUTO, PLAT)' placeholder="JQL for jira_search">
+        </div>
+        <button class="action-btn primary" style="padding: 8px 20px; margin-bottom: 0; width: auto;">Search</button>
+        <div style="margin-top: 10px; font-size: 11px; color: #888;">Projects limited to ROCM, AISQA, AITESTAUTO, PLAT (GeneralGuidelines.md L15).</div>
+      </div>
+
+      <div class="output-panel">
+        <div class="output-panel-header">
+          <div class="output-panel-title">Output</div>
+          <div class="output-mode-badges">
+            <span class="output-mode primary">Table</span>
+            <span class="output-mode secondary">Document</span>
+          </div>
+        </div>
+        <div class="output-panel-body" style="padding: 0;">
+      <table class="machine-table" style="margin: 0;">
+        <thead>
+          <tr><th>Key</th><th>Summary</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr style="background: #eff6ff; cursor: pointer;">
+            <td style="font-weight: 600; color: #2563eb;">ROCM-XXXX</td>
+            <td style="font-size: 12px;">(from jira_search results)</td>
+            <td style="font-size: 12px;">&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding: 20px; background: #fafbfc;">
+      <div class="output-panel" style="margin-top: 0;">
+        <div class="output-panel-header">
+          <div class="output-panel-title">Detail</div>
+          <div class="output-mode-badges">
+            <span class="output-mode primary">Document</span>
+          </div>
+        </div>
+        <div class="output-panel-body">
+          <div style="font-size: 11px; color: #666; margin-bottom: 12px; line-height: 1.5;">
+            Select a row &rarr; <code>jira_get_issue(issue_key, include_comments=true)</code> (server.py L454). Rendered issue fields + comments.
+          </div>
+          <div class="context-title" style="margin-top: 8px;">Related: triage artifacts</div>
+          <div style="font-size: 11px; color: #666; line-height: 1.5;">
+            Failure script writes <code>tickets/&lt;test&gt;_PREFILLED.md</code> under triage run dir — surfaced on Triage page, not here.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="annotation">jira_search + jira_get_issue (server.py L288, L454). Output: Table (search) + Document (issue detail drawer). External link to Jira web optional.</p>
+
+<hr class="section-divider">
+
+
+</body>
+</html>
