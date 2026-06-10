@@ -1,5 +1,3 @@
-'use client'
-
 import React from 'react'
 
 interface Column<T> {
@@ -11,9 +9,10 @@ interface DataTableProps<T> {
   columns: Column<T>[]
   rows: T[]
   onRowClick?: (row: T) => void
+  rowKey?: (row: T, i: number) => string | number
 }
 
-export function DataTable<T>({ columns, rows, onRowClick }: DataTableProps<T>) {
+export function DataTable<T>({ columns, rows, onRowClick, rowKey }: DataTableProps<T>) {
   return (
     <table className="w-full border-collapse text-sm">
       <thead>
@@ -28,7 +27,7 @@ export function DataTable<T>({ columns, rows, onRowClick }: DataTableProps<T>) {
       <tbody>
         {rows.map((row, i) => (
           <tr
-            key={i}
+            key={rowKey ? rowKey(row, i) : i}
             onClick={() => onRowClick?.(row)}
             className={`border-b border-gray-100 hover:bg-gray-50 ${onRowClick ? 'cursor-pointer' : ''}`}
           >
