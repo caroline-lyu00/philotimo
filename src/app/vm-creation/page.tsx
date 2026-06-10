@@ -1,1 +1,1 @@
-export { VmCreationPage as default } from '@/features/vmCreation/VmCreationPage'
+export { default } from '@/features/vmCreation/VmCreationPage'
