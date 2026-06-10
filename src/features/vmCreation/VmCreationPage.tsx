@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { ActionButton } from '@/components/ActionButton'
+import { AgentWorkflowOutput } from '@/components/AgentWorkflowOutput'
 import { OutputBox } from '@/components/OutputBox'
 import { createVm } from './vmCreation.api'
 import { Hypervisor, VmCreationResult, VmProfile } from './vmCreation.types'
@@ -181,6 +182,10 @@ export default function VmCreationPage() {
           </OutputBox>
         </div>
 
+      </div>
+
+      <div className="mt-8 rounded-xl border border-[#e0e0e0] overflow-hidden bg-white">
+        <AgentWorkflowOutput showTopBorder={false} />
       </div>
     </div>
   )

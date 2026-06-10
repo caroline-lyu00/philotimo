@@ -114,12 +114,18 @@ export function SkillCard({
   icon,
   title,
   description,
+  purpose,
+  capabilities,
   href,
   accent = 'blue',
 }: {
   icon: string
   title: string
   description: string
+  /** What this skill is for (problem it solves). */
+  purpose: string
+  /** Concrete things the agent / workflow can do here. */
+  capabilities: string[]
   href: string
   accent?: 'blue' | 'green' | 'amber'
 }) {
@@ -133,14 +139,28 @@ export function SkillCard({
     <Link
       href={href}
       className={[
-        'border-2 border-[#e0e0e0] rounded-lg p-3 flex items-center gap-2.5 transition-colors',
+        'border-2 border-[#e0e0e0] rounded-lg p-3 flex items-start gap-2.5 transition-colors text-left',
         hover[accent],
       ].join(' ')}
     >
-      <div className="text-lg">{icon}</div>
-      <div>
+      <div className="text-lg shrink-0 leading-none pt-0.5">{icon}</div>
+      <div className="min-w-0 flex-1">
         <div className="text-xs font-semibold">{title}</div>
-        <div className="text-[10px] text-gray-400">{description}</div>
+        <div className="text-[10px] text-gray-400 mt-0.5">{description}</div>
+        <div className="mt-2 pt-2 border-t border-gray-100">
+          <div className="text-[9px] font-semibold uppercase tracking-wide text-gray-400 mb-0.5">
+            What it&apos;s for
+          </div>
+          <p className="text-[10px] text-gray-600 leading-snug">{purpose}</p>
+          <div className="text-[9px] font-semibold uppercase tracking-wide text-gray-400 mt-1.5 mb-0.5">
+            What it can do
+          </div>
+          <ul className="text-[10px] text-gray-600 leading-snug list-disc pl-3.5 space-y-0.5">
+            {capabilities.map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ul>
+        </div>
       </div>
     </Link>
   )
@@ -173,7 +193,7 @@ export function SkillColumn({
         </div>
         <div className="text-[13px] font-bold">{title}</div>
       </div>
-      <div className="flex flex-col gap-2">{children}</div>
+      <div className="flex flex-col gap-3">{children}</div>
     </div>
   )
 }

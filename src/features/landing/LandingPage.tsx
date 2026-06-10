@@ -7,10 +7,10 @@ export function LandingPage() {
   return (
     <div>
       <div className="bg-white rounded-xl border border-[#e0e0e0] p-10 text-center">
-        <div className="text-[22px] font-bold mb-1.5">Philtimo</div>
+        <div className="text-[22px] font-bold mb-1.5">Philotimo</div>
         <div className="text-[13px] text-gray-400 mb-8">Select a skill to get started</div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[800px] mx-auto text-left">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[960px] mx-auto text-left">
           {LANDING_GROUPS.map((group) => (
             <SkillColumn
               key={group.title}
