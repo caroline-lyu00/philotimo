@@ -1,5 +1,3 @@
-'use client'
-
 import React from 'react'
 
 interface Column<T> {
@@ -7,7 +5,7 @@ interface Column<T> {
   render: (row: T) => React.ReactNode
 }
 
-interface DataTableProps<T> {
+interface DataTableProps<T extends { id?: string | number }> {
   columns: Column<T>[]
   rows: T[]
   onRowClick?: (row: T) => void
@@ -28,7 +26,7 @@ export function DataTable<T>({ columns, rows, onRowClick }: DataTableProps<T>) {
       <tbody>
         {rows.map((row, i) => (
           <tr
-            key={i}
+            key={row.id ?? i}
             onClick={() => onRowClick?.(row)}
             className={`border-b border-gray-100 hover:bg-gray-50 ${onRowClick ? 'cursor-pointer' : ''}`}
           >

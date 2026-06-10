@@ -1,4 +1,3 @@
-'use client'
 
 import React from 'react'
 import { SkillCard, SkillColumn } from '@/components/OutputBox'
