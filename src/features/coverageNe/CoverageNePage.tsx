@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { BucketPlaceholder, CoverageBucket } from '@/components/CoverageBucket'
 import { FormField, FormSelect } from '@/components/FormField'
 import { FormPanel } from '@/components/FormPanel'
@@ -8,6 +8,7 @@ import { JobTag } from '@/components/JobTag'
 import { PanelButton } from '@/components/PanelButton'
 import { OutputBox } from '@/components/OutputBox'
 import { SkillPage, SkillPageBody } from '@/components/SkillPage'
+import { TerminalOutput } from '@/components/TerminalOutput'
 import {
   COVERAGE_BUILDS,
   COVERAGE_HOSTS,
@@ -69,6 +70,17 @@ function BucketTable({
 }
 
 export function CoverageNePage() {
+  const [loading, setLoading] = useState(false)
+  const [streamLines, setStreamLines] = useState<string[]>([])
+
+  async function handleQuery() {
+    setLoading(true)
+    setStreamLines(['→ Calling get_coverage_summary...'])
+    await new Promise((r) => setTimeout(r, 500))
+    setStreamLines((l) => [...l, '✓ Coverage data retrieved', '→ Bucketing results...', '✓ Done'])
+    setLoading(false)
+  }
+
   return (
     <SkillPage>
       <SkillPageBody>
@@ -90,14 +102,24 @@ export function CoverageNePage() {
                 ))}
               </FormSelect>
             </FormField>
-            <PanelButton variant="primary" block={false} className="mb-0 px-6">
-              Query
+            <PanelButton variant="primary" block={false} className="mb-0 px-6" onClick={handleQuery} disabled={loading}>
+              {loading ? 'Querying…' : 'Query'}
             </PanelButton>
           </div>
           <p className="mt-2 text-[11px] text-gray-400">
             Tool: get_coverage_summary (mcp.json L95). Buckets per CoverageAnalysis.md L25–35.
           </p>
         </FormPanel>
+
+        <div className="mb-4">
+          <TerminalOutput
+            title="MCP trace"
+            status={loading ? 'running' : 'idle'}
+            lines={streamLines}
+            placeholder="Click Query to see tool call progress."
+            compact
+          />
+        </div>
 
         <OutputBox modes={['Table']} primaryMode="Table" bodyClassName="p-0">
           <div className="max-h-[520px] overflow-y-auto p-3.5">

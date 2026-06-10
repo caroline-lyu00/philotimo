@@ -7,6 +7,7 @@ import { JobTag } from '@/components/JobTag'
 import { PanelButton } from '@/components/PanelButton'
 import { OutputBox } from '@/components/OutputBox'
 import { SkillPage, SkillPageBody } from '@/components/SkillPage'
+import { TerminalOutput } from '@/components/TerminalOutput'
 import { queryDockerImages } from './dockerMatch.api'
 import { DOCKER_BUILDS, DOCKER_HOSTS } from './dockerMatch.mock'
 import { DockerImage } from './dockerMatch.types'
@@ -32,14 +33,17 @@ export default function DockerMatchPage() {
   const [framework, setFramework] = useState<Framework>('')
   const [results, setResults] = useState<DockerImage[]>([])
   const [loading, setLoading] = useState(false)
+  const [streamLines, setStreamLines] = useState<string[]>([])
 
   async function handleQuery() {
     setLoading(true)
-    const data = await queryDockerImages({
-      build,
-      host,
-      framework: framework || undefined,
-    })
+    setStreamLines([`→ Connecting to ${host}...`])
+    await new Promise((r) => setTimeout(r, 400))
+    setStreamLines((l) => [...l, '✓ Host reachable', `→ Detecting OS on ${host}...`])
+    await new Promise((r) => setTimeout(r, 400))
+    setStreamLines((l) => [...l, '✓ OS detected: Ubuntu-24.04', `→ Querying get_dockers_by_build_string for ${build}...`])
+    const data = await queryDockerImages({ build, host, framework: framework || undefined })
+    setStreamLines((l) => [...l, `✓ Found ${data.length} images`, '→ Filtering internal_testing / develop-upstream tags...', '✓ Done'])
     setResults(data)
     setLoading(false)
   }
@@ -141,6 +145,16 @@ export default function DockerMatchPage() {
         <p className="mt-3 text-[11px] text-gray-400">
           Filtered out: internal_testing, develop-upstream tags
         </p>
+
+        <div className="mt-4">
+          <TerminalOutput
+            title="MCP trace"
+            status={loading ? 'running' : 'idle'}
+            lines={streamLines}
+            placeholder="Click Query to see tool call progress."
+            compact
+          />
+        </div>
       </SkillPageBody>
     </SkillPage>
   )
