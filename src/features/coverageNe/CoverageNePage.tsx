@@ -8,6 +8,7 @@ import { JobTag } from '@/components/JobTag'
 import { PanelButton } from '@/components/PanelButton'
 import { OutputBox } from '@/components/OutputBox'
 import { SkillPage, SkillPageBody } from '@/components/SkillPage'
+import { TerminalOutput } from '@/components/TerminalOutput'
 import {
   COVERAGE_BUILDS,
   COVERAGE_HOSTS,
@@ -98,6 +99,13 @@ export function CoverageNePage() {
             Tool: get_coverage_summary (mcp.json L95). Buckets per CoverageAnalysis.md L25–35.
           </p>
         </FormPanel>
+
+        <div className="mb-5">
+          <TerminalOutput
+            title="Agent steps"
+            placeholder="Run a query to see agent steps…"
+          />
+        </div>
 
         <OutputBox modes={['Table']} primaryMode="Table" bodyClassName="p-0">
           <div className="max-h-[520px] overflow-y-auto p-3.5">

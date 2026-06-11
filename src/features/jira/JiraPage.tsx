@@ -7,6 +7,7 @@ import { DetailPanel, OutputBox } from '@/components/OutputBox'
 import { MainPanel, SectionHeading, SkillLayout } from '@/components/SkillLayout'
 import { PanelButton } from '@/components/PanelButton'
 import { SkillPage } from '@/components/SkillPage'
+import { TerminalOutput } from '@/components/TerminalOutput'
 import { JIRA_DEFAULT_JQL, JIRA_RESULTS } from './jira.mock'
 
 export function JiraPage() {
@@ -32,6 +33,13 @@ export function JiraPage() {
               Projects limited to ROCM, AISQA, AITESTAUTO, PLAT (GeneralGuidelines.md L15).
             </p>
           </FormPanel>
+
+          <div className="mb-5">
+                    <TerminalOutput
+                      title="Agent steps"
+                      placeholder="Run a query to see agent steps…"
+                    />
+                  </div>
 
           <OutputBox modes={['Table', 'Document']} primaryMode="Table" bodyClassName="p-0">
             <table className="w-full border-collapse text-sm">
