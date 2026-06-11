@@ -35,11 +35,7 @@ export default function DockerMatchPage() {
 
   async function handleQuery() {
     setLoading(true)
-    const data = await queryDockerImages({
-      build,
-      host,
-      framework: framework || undefined,
-    })
+    const data = await queryDockerImages({ build, host, framework: framework || undefined })
     setResults(data)
     setLoading(false)
   }
@@ -141,6 +137,8 @@ export default function DockerMatchPage() {
         <p className="mt-3 text-[11px] text-gray-400">
           Filtered out: internal_testing, develop-upstream tags
         </p>
+
+
       </SkillPageBody>
     </SkillPage>
   )

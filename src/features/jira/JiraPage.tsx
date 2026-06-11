@@ -11,6 +11,13 @@ import { JIRA_DEFAULT_JQL, JIRA_RESULTS } from './jira.mock'
 
 export function JiraPage() {
   const [selectedKey, setSelectedKey] = useState(JIRA_RESULTS[0].key)
+  const [loading, setLoading] = useState(false)
+
+  async function handleSearch() {
+    setLoading(true)
+    await new Promise((r) => setTimeout(r, 500))
+    setLoading(false)
+  }
 
   return (
     <SkillPage>
@@ -25,8 +32,8 @@ export function JiraPage() {
                 className="py-2"
               />
             </FormField>
-            <PanelButton variant="primary" block={false} className="px-5 mb-0">
-              Search
+            <PanelButton variant="primary" block={false} className="px-5 mb-0" onClick={handleSearch} disabled={loading}>
+              {loading ? 'Searching…' : 'Search'}
             </PanelButton>
             <p className="mt-2.5 text-[11px] text-gray-400">
               Projects limited to ROCM, AISQA, AITESTAUTO, PLAT (GeneralGuidelines.md L15).
