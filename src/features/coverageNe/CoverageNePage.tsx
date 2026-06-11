@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { BucketPlaceholder, CoverageBucket } from '@/components/CoverageBucket'
 import { FormField, FormSelect } from '@/components/FormField'
 import { FormPanel } from '@/components/FormPanel'
@@ -70,6 +70,14 @@ function BucketTable({
 }
 
 export function CoverageNePage() {
+  const [loading, setLoading] = useState(false)
+
+  async function handleQuery() {
+    setLoading(true)
+    await new Promise((r) => setTimeout(r, 500))
+    setLoading(false)
+  }
+
   return (
     <SkillPage>
       <SkillPageBody>
@@ -91,8 +99,8 @@ export function CoverageNePage() {
                 ))}
               </FormSelect>
             </FormField>
-            <PanelButton variant="primary" block={false} className="mb-0 px-6">
-              Query
+            <PanelButton variant="primary" block={false} className="mb-0 px-6" onClick={handleQuery} disabled={loading}>
+              {loading ? 'Querying…' : 'Query'}
             </PanelButton>
           </div>
           <p className="mt-2 text-[11px] text-gray-400">
