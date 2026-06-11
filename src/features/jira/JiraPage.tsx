@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import { TerminalOutput } from '@/components/TerminalOutput'
 import { FormField, FormInput } from '@/components/FormField'
 import { FormPanel } from '@/components/FormPanel'
 import { DetailPanel, OutputBox } from '@/components/OutputBox'
@@ -13,13 +12,10 @@ import { JIRA_DEFAULT_JQL, JIRA_RESULTS } from './jira.mock'
 export function JiraPage() {
   const [selectedKey, setSelectedKey] = useState(JIRA_RESULTS[0].key)
   const [loading, setLoading] = useState(false)
-  const [streamLines, setStreamLines] = useState<string[]>([])
 
   async function handleSearch() {
     setLoading(true)
-    setStreamLines(['→ Calling jira_search...'])
     await new Promise((r) => setTimeout(r, 500))
-    setStreamLines((l) => [...l, `✓ Found ${JIRA_RESULTS.length} results`, '→ Fetching issue details...', '✓ Done'])
     setLoading(false)
   }
 
@@ -43,16 +39,6 @@ export function JiraPage() {
               Projects limited to ROCM, AISQA, AITESTAUTO, PLAT (GeneralGuidelines.md L15).
             </p>
           </FormPanel>
-
-          <div className="mb-4">
-            <TerminalOutput
-              title="MCP trace"
-              status={loading ? 'running' : 'idle'}
-              lines={streamLines}
-              placeholder="Click Search to see tool call progress."
-              compact
-            />
-          </div>
 
           <OutputBox modes={['Table', 'Document']} primaryMode="Table" bodyClassName="p-0">
             <table className="w-full border-collapse text-sm">
