@@ -5,8 +5,9 @@ import { FormField, FormInput } from '@/components/FormField'
 import { FormPanel } from '@/components/FormPanel'
 import { LogViewer } from '@/components/LogViewer'
 import { PanelButton } from '@/components/PanelButton'
-import { OutputBox } from '@/components/OutputBox'
+import { OutputBox, OutputSection } from '@/components/OutputBox'
 import { SkillPage, SkillPageBody } from '@/components/SkillPage'
+import { TerminalOutput } from '@/components/TerminalOutput'
 
 export function LogFetcherPage() {
   return (
@@ -24,16 +25,29 @@ export function LogFetcherPage() {
             Fetch
           </PanelButton>
           <p className="mt-2 text-[11px] text-gray-400">
-            <code>fetch_log(url)</code> — mcp_server_log_fetcher/server.py L39–77: &lt;1 MB full file;
-            ≥1 MB last ~10,000 lines (automatic).
+            <code>fetch_log(url)</code> — &lt;1 MB returns full file; ≥1 MB returns last ~10,000 lines automatically.
           </p>
         </FormPanel>
 
-        <OutputBox modes={['Log viewer']} primaryMode="Log viewer">
-          <LogViewer />
-          <p className="mt-2 text-[10px] text-gray-400">
-            Ephemeral — returned string from fetch_log; not written to run dir unless user saves.
-          </p>
+        <OutputBox modes={['Stream', 'Log viewer']} primaryMode="Log viewer">
+          <OutputSection label="Agent progress">
+            <TerminalOutput
+              title="Agent Steps"
+              placeholder="Waiting for fetch…"
+              compact
+            />
+          </OutputSection>
+
+          <OutputSection label="Log contents">
+            <LogViewer
+              filename="job-logs.txt"
+              lines={[
+              ]}
+            />
+            <p className="mt-2 text-[10px] text-black-400">
+              Ephemeral — returned string from fetch_log; not written to run dir unless user saves.
+            </p>
+          </OutputSection>
         </OutputBox>
       </SkillPageBody>
     </SkillPage>

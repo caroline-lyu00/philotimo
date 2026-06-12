@@ -7,6 +7,7 @@ import { JobTag } from '@/components/JobTag'
 import { PanelButton } from '@/components/PanelButton'
 import { OutputBox } from '@/components/OutputBox'
 import { SkillPage, SkillPageBody } from '@/components/SkillPage'
+import { TerminalOutput } from '@/components/TerminalOutput'
 import { queryDockerImages } from './dockerMatch.api'
 import { DOCKER_BUILDS, DOCKER_HOSTS } from './dockerMatch.mock'
 import { DockerImage } from './dockerMatch.types'
@@ -32,10 +33,22 @@ export default function DockerMatchPage() {
   const [framework, setFramework] = useState<Framework>('')
   const [results, setResults] = useState<DockerImage[]>([])
   const [loading, setLoading] = useState(false)
+  const [agentLines, setAgentLines] = useState<string[]>([])
 
   async function handleQuery() {
     setLoading(true)
-    const data = await queryDockerImages({ build, host, framework: framework || undefined })
+    setAgentLines([])
+    setAgentLines([`Detecting OS for host ${host}…`])
+    const data = await queryDockerImages({
+      build,
+      host,
+      framework: framework || undefined,
+    })
+    setAgentLines((prev) => [
+      ...prev,
+      `Querying dockers for build ${build}…`,
+      `Found ${data.length} image(s).`,
+    ])
     setResults(data)
     setLoading(false)
   }
@@ -103,6 +116,15 @@ export default function DockerMatchPage() {
             (docker-image-match/SKILL.md L7–15).
           </p>
         </FormPanel>
+
+        <div className="mb-5">
+          <TerminalOutput
+            title="Agent steps"
+            status={loading ? 'running' : 'idle'}
+            lines={agentLines}
+            placeholder="Run a query to see agent steps…"
+          />
+        </div>
 
         {results.length > 0 && (
           <OutputBox modes={['Table']} primaryMode="Table" bodyClassName="p-0">
