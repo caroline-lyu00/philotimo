@@ -133,12 +133,12 @@ export function SkillCard({
     <Link
       href={href}
       className={[
-        'border-2 border-[#e0e0e0] rounded-lg p-3 flex items-center gap-2.5 transition-colors',
+        'border-2 border-[#e0e0e0] rounded-lg p-3 flex items-center gap-2.5 transition-colors h-[96px] overflow-hidden',
         hover[accent],
       ].join(' ')}
     >
-      <div className="text-lg">{icon}</div>
-      <div>
+      <div className="text-lg shrink-0">{icon}</div>
+      <div className="min-w-0">
         <div className="text-xs font-semibold">{title}</div>
         <div className="text-[10px] text-gray-400">{description}</div>
       </div>

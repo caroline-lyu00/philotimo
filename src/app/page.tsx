@@ -45,41 +45,41 @@ export default function Page() {
         <h1 className="text-2xl font-bold mb-1">Philotimo</h1>
         <p className="text-sm text-gray-400 mb-8">AISQA Servers and Skills</p>
 
-        <div className="grid grid-cols-3 gap-6 text-left">
+        <div className="grid grid-cols-3 gap-4 text-left">
           {COLUMNS.map((col) => (
-            <div key={col.number}>
+            <div key={col.number} className="min-w-0 flex flex-col">
               <div className="flex items-center gap-2 mb-3">
                 <div
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0"
                   style={{ background: col.color }}
                 >
                   {col.number}
                 </div>
-                <span className="text-sm font-bold">{col.label}</span>
+                <span className="text-sm font-bold truncate">{col.label}</span>
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 {col.skills.map((skill) =>
                   skill.comingSoon ? (
                     <div
                       key={skill.href}
-                      className="flex items-start gap-4 border-2 border-gray-100 rounded-xl p-5 bg-gray-50 opacity-40 cursor-not-allowed"
+                      className="flex items-center gap-3 border-2 border-gray-100 rounded-lg px-3 py-2.5 bg-gray-50 opacity-40 cursor-not-allowed h-[72px]"
                     >
-                      <span className="text-2xl leading-none pt-0.5 grayscale">{skill.icon}</span>
-                      <div>
-                        <div className="text-sm font-semibold text-gray-400">{skill.title}</div>
-                        <div className="text-xs text-gray-400 italic mt-1">Coming soon</div>
+                      <span className="text-xl shrink-0 grayscale">{skill.icon}</span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold text-gray-400 truncate">{skill.title}</div>
+                        <div className="text-xs text-gray-400 italic">Coming soon</div>
                       </div>
                     </div>
                   ) : (
                     <Link
                       key={skill.href}
                       href={skill.href}
-                      className={`flex items-start gap-4 border-2 border-gray-200 rounded-xl p-5 transition-colors ${col.hoverBorder} ${col.hoverBg}`}
+                      className={`flex items-center gap-3 border-2 border-gray-200 rounded-lg px-3 py-2.5 transition-colors h-[72px] ${col.hoverBorder} ${col.hoverBg}`}
                     >
-                      <span className="text-2xl leading-none pt-0.5">{skill.icon}</span>
-                      <div>
-                        <div className="text-sm font-semibold">{skill.title}</div>
-                        <div className="text-xs text-gray-400 mt-1.5 leading-relaxed">{skill.desc}</div>
+                      <span className="text-xl shrink-0">{skill.icon}</span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold truncate">{skill.title}</div>
+                        <div className="text-xs text-gray-400 mt-0.5 line-clamp-2 leading-snug">{skill.desc}</div>
                       </div>
                     </Link>
                   )
